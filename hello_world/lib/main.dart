@@ -56,6 +56,10 @@ class _TextInputWidgetState extends State<TextInputWidget> {
   }
 
   void changeText(text) {
+    if (text == "Hello") {
+      controller.clear();
+      text = "";
+    }
     setState(() {
       this.text = text;
     });
