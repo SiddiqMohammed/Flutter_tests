@@ -13,33 +13,44 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter test',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  // const MyHomePage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  String text = "";
+
+  void changetext(String text) {
+    setState(() {
+      this.text = text;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Hello")), body: TextInputWidget());
+        appBar: AppBar(title: const Text("Hello")),
+        body: Column(
+            children: <Widget>[TextInputWidget(changetext), Text(text)]));
   }
 }
 
 class TextInputWidget extends StatefulWidget {
-  const TextInputWidget({Key? key}) : super(key: key);
+  // const TextInputWidget({Key? key}) : super(key: key);
+
+  final Function(String) callback;
+
+  TextInputWidget(this.callback);
 
   @override
   _TextInputWidgetState createState() => _TextInputWidgetState();
@@ -55,14 +66,9 @@ class _TextInputWidgetState extends State<TextInputWidget> {
     controller.dispose();
   }
 
-  void changeText(text) {
-    if (text == "Hello") {
-      controller.clear();
-      text = "";
-    }
-    setState(() {
-      this.text = text;
-    });
+  void click() {
+    widget.callback(controller.text);
+    controller.clear();
   }
 
   @override
@@ -70,12 +76,18 @@ class _TextInputWidgetState extends State<TextInputWidget> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: this.controller,
+          controller: controller,
           decoration: InputDecoration(
-              prefixIcon: Icon(Icons.message), labelText: "Type text here"),
-          onChanged: (text) => this.changeText(text),
+              prefixIcon: Icon(Icons.message),
+              labelText: "Type text here",
+              suffixIcon: IconButton(
+                icon: Icon(Icons.send),
+                onPressed: click,
+                tooltip: "Post Message",
+              )),
+          // onChanged: (text) => changeText(text),
         ),
-        Text(this.text)
+        // Text(text)
       ],
     );
   }
